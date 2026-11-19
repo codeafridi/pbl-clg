@@ -4,55 +4,260 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cloud Deploy — PBL Project</title>
+  <meta name="description" content="A containerized web app shipped from git push to AWS with GitHub Actions, Docker and NGINX. A cloud deployment PBL project." />
+  <meta name="theme-color" content="#0b0d0c" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="hero">
-    <nav class="nav">
-      <span class="logo">☁️ CloudDeploy</span>
-      <a href="#features">Features</a>
-      <a href="#how">How it works</a>
-    </nav>
-    <div class="hero-content">
-      <h1>Automated Cloud Deployment</h1>
-      <p>A containerized web app shipped to AWS with CI/CD.</p>
-      <button id="cta">Say Hello</button>
-      <p id="greeting" class="greeting"></p>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" id="header">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="Cloud Deploy, back to top">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Cloud<em>Deploy</em></span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#pipeline">Pipeline</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#demo">Demo</a>
+      </nav>
+
+      <a class="repo-link" href="https://github.com/codeafridi/pbl-clg" target="_blank" rel="noreferrer">
+        GitHub <span aria-hidden="true">↗</span>
+      </a>
     </div>
   </header>
 
-  <section id="features" class="section">
-    <h2>What this project demonstrates</h2>
-    <div class="cards">
-      <div class="card">
-        <h3>Docker</h3>
-        <p>The app runs inside a container, the same everywhere.</p>
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>PBL · Automated cloud deployment</p>
+          <h1>From <span class="mono-strong">git&nbsp;push</span> to a running container.</h1>
+          <p class="lede">
+            A small web app with a real delivery path: GitHub Actions builds and tests it,
+            Docker packages it, and NGINX serves it from a cloud VM. No frameworks, no build
+            step, no hand-waving.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#demo">Try the app <span aria-hidden="true">↓</span></a>
+            <a class="btn btn-ghost" href="#pipeline">Follow the pipeline <span aria-hidden="true">→</span></a>
+          </div>
+          <dl class="hero-meta">
+            <div><dt>Runtime</dt><dd>NGINX · port 80</dd></div>
+            <div><dt>Pipeline</dt><dd>GitHub Actions</dd></div>
+            <div><dt>Host</dt><dd>AWS EC2</dd></div>
+          </dl>
+        </div>
+
+        <aside class="console" aria-label="Sample deployment run">
+          <div class="console-bar">
+            <span class="console-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="console-file">.github/workflows/ci.yml</span>
+            <span class="console-state" id="consoleState">queued</span>
+          </div>
+
+          <div class="console-body">
+            <div class="commit">
+              <span class="commit-branch">pbl</span>
+              <span class="commit-msg">improve the landing page</span>
+              <span class="commit-sha">ab44ae8</span>
+            </div>
+
+            <ol class="stages" id="stages">
+              <li class="stage" data-stage><span class="stage-dot" aria-hidden="true"></span><span class="stage-name">checkout</span><span class="stage-status">waiting</span></li>
+              <li class="stage" data-stage><span class="stage-dot" aria-hidden="true"></span><span class="stage-name">install</span><span class="stage-status">waiting</span></li>
+              <li class="stage" data-stage><span class="stage-dot" aria-hidden="true"></span><span class="stage-name">test</span><span class="stage-status">waiting</span></li>
+              <li class="stage" data-stage><span class="stage-dot" aria-hidden="true"></span><span class="stage-name">docker build</span><span class="stage-status">waiting</span></li>
+              <li class="stage" data-stage><span class="stage-dot" aria-hidden="true"></span><span class="stage-name">push image</span><span class="stage-status">waiting</span></li>
+              <li class="stage" data-stage><span class="stage-dot" aria-hidden="true"></span><span class="stage-name">deploy</span><span class="stage-status">waiting</span></li>
+            </ol>
+
+            <pre class="log" id="log" aria-live="polite"><span class="log-muted">$ waiting for run…</span></pre>
+          </div>
+
+          <div class="console-foot">
+            <code>docker build -t pbl-clg .</code>
+            <span class="console-actions">
+              <button class="mini" id="copyBuild" type="button">copy</button>
+              <button class="mini" id="replay" type="button">replay ↻</button>
+            </span>
+          </div>
+        </aside>
       </div>
-      <div class="card">
-        <h3>GitHub Actions</h3>
-        <p>Every push builds, tests and ships the image automatically.</p>
+    </section>
+
+    <section class="strip" aria-label="Project facts">
+      <div class="wrap strip-grid">
+        <p><span class="strip-label">Runtime dependencies</span><span class="strip-value">0</span></p>
+        <p><span class="strip-label">Container images</span><span class="strip-value">1</span></p>
+        <p><span class="strip-label">Pipeline stages</span><span class="strip-value">6</span></p>
+        <p><span class="strip-label">Databases to manage</span><span class="strip-value">0</span></p>
       </div>
-      <div class="card">
-        <h3>AWS EC2</h3>
-        <p>The container runs on a cloud virtual machine, publicly reachable.</p>
+    </section>
+
+    <section class="section" id="pipeline">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="kicker">01 / Pipeline</p>
+          <div>
+            <h2>One push. Six steps. No manual deploy.</h2>
+            <p class="section-lede">
+              The workflow runs the same way on every commit. Tests gate the image, the image
+              gates the deploy, and the branch stays shippable.
+            </p>
+          </div>
+        </div>
+
+        <ol class="rail">
+          <li class="rail-step reveal">
+            <span class="rail-num">01</span>
+            <h3>Push</h3>
+            <p>A commit lands on <code>main</code> or <code>pbl</code> and GitHub Actions picks it up.</p>
+            <span class="rail-file">git push origin pbl</span>
+          </li>
+          <li class="rail-step reveal">
+            <span class="rail-num">02</span>
+            <h3>Install</h3>
+            <p>Node 20 is set up and dependencies come from the lockfile with <code>npm ci</code>.</p>
+            <span class="rail-file">npm ci</span>
+          </li>
+          <li class="rail-step reveal">
+            <span class="rail-num">03</span>
+            <h3>Test</h3>
+            <p>A smoke test boots the server and asserts the home page returns 200 with its title.</p>
+            <span class="rail-file">npm test</span>
+          </li>
+          <li class="rail-step reveal">
+            <span class="rail-num">04</span>
+            <h3>Build</h3>
+            <p>The static site is copied into an <code>nginx:alpine</code> image. One artifact, same everywhere.</p>
+            <span class="rail-file">docker build</span>
+          </li>
+          <li class="rail-step reveal">
+            <span class="rail-num">05</span>
+            <h3>Publish</h3>
+            <p>The image is tagged with the commit SHA and <code>latest</code>, then pushed to Docker Hub.</p>
+            <span class="rail-file">docker push</span>
+          </li>
+          <li class="rail-step reveal">
+            <span class="rail-num">06</span>
+            <h3>Deploy</h3>
+            <p>EC2 pulls the new image and serves it on port 80. The site is live without a manual copy step.</p>
+            <span class="rail-file">docker run -p 80:80</span>
+          </li>
+        </ol>
+
+        <p class="rail-note reveal">
+          Workflow: <a href="https://github.com/codeafridi/pbl-clg/blob/pbl/.github/workflows/ci.yml" target="_blank" rel="noreferrer">.github/workflows/ci.yml</a>
+          <span aria-hidden="true">·</span> Node 20 <span aria-hidden="true">·</span> Ubuntu latest
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="architecture">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="kicker">02 / Architecture</p>
+          <div>
+            <h2>Three systems, one artifact.</h2>
+            <p class="section-lede">
+              Source, build and runtime stay separate. The only thing that crosses the boundary
+              is a tagged container image — <code>latest</code> plus the commit SHA.
+            </p>
+          </div>
+        </div>
+
+        <div class="blueprint">
+          <article class="node reveal">
+            <span class="node-tag">Source</span>
+            <h3>GitHub</h3>
+            <p><code>server.js</code>, <code>public/</code>, <code>Dockerfile</code> and the smoke test live in one repository.</p>
+            <code class="node-ref">codeafridi/pbl-clg</code>
+          </article>
+
+          <div class="connector reveal" aria-hidden="true"><span>on push</span></div>
+
+          <article class="node node-accent reveal">
+            <span class="node-tag">Build &amp; publish</span>
+            <h3>Actions + Docker Hub</h3>
+            <p>Install, test, build the image, then publish it under two tags.</p>
+            <code class="node-ref">pbl-clg:latest · pbl-clg:ab44ae8</code>
+          </article>
+
+          <div class="connector reveal" aria-hidden="true"><span>pull image</span></div>
+
+          <article class="node reveal">
+            <span class="node-tag">Runtime</span>
+            <h3>EC2 · NGINX</h3>
+            <p>A single container serves the static files on port 80. Nothing else is exposed.</p>
+            <code class="node-ref">public/index.html</code>
+          </article>
+        </div>
+
+        <p class="request-path reveal">
+          <span>Request path</span>
+          browser <b aria-hidden="true">→</b> EC2:80 <b aria-hidden="true">→</b> nginx <b aria-hidden="true">→</b> <code>public/index.html</code>
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="demo">
+      <div class="wrap demo-grid">
+        <div class="reveal">
+          <p class="kicker">03 / The app</p>
+          <h2>Small on purpose.</h2>
+          <p class="section-lede">
+            The site you are reading is the artifact: vanilla HTML, CSS and a few lines of
+            JavaScript, served straight from the container. The only backend code is a static
+            file server used for local development.
+          </p>
+          <ul class="checks">
+            <li>No client-side framework or bundler</li>
+            <li>No API keys, database or environment secrets</li>
+            <li>Accessible form, keyboard support, reduced-motion fallback</li>
+          </ul>
+        </div>
+
+        <div class="demo-card reveal">
+          <div class="demo-bar">
+            <span>index.html</span>
+            <span class="demo-status">200 OK</span>
+          </div>
+          <form class="hello-form" id="helloForm">
+            <label for="name">What should we call you?</label>
+            <div class="input-row">
+              <input id="name" name="name" type="text" placeholder="e.g. Ada Lovelace" autocomplete="name" maxlength="40" />
+              <button type="submit">Say hello</button>
+            </div>
+          </form>
+          <p class="response" id="greeting" aria-live="polite">
+            <span class="response-prompt" aria-hidden="true">$</span>
+            <span id="greetingText">waiting for input…</span>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <span class="brand footer-brand">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>Cloud<em>Deploy</em></span>
+        </span>
+        <p>PBL Project · Automated Cloud Deployment of a Containerized Web App</p>
+      </div>
+      <div class="footer-links">
+        <a href="#pipeline">Pipeline</a>
+        <a href="#architecture">Architecture</a>
+        <a href="https://github.com/codeafridi/pbl-clg" target="_blank" rel="noreferrer">Repository ↗</a>
       </div>
     </div>
-  </section>
-
-  <section id="how" class="section alt">
-    <h2>Pipeline</h2>
-    <ol class="pipeline">
-      <li>Developer pushes code to GitHub</li>
-      <li>GitHub Actions builds &amp; tests</li>
-      <li>Docker image is created</li>
-      <li>Image pushed to registry</li>
-      <li>EC2 pulls &amp; runs the container</li>
-      <li>Website goes live</li>
-    </ol>
-  </section>
-
-  <footer>
-    <p>PBL Project · Automated Cloud Deployment of a Containerized Web App</p>
   </footer>
 
   <script src="app.js"></script>
